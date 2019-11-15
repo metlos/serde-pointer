@@ -1,0 +1,12 @@
+language: rust
+cache: cargo
+before-cache: |
+  cargo install cargo-tarpaulin -f
+script:
+- cargo clean
+- cargo build
+- cargo test
+after-success: |
+  cargo tarpaulin --out Xml
+  bash <(curl -s https://codecov.io/bash)
+  echo "Uploaded code coverage"

@@ -1,0 +1,14 @@
+[package]
+name = "serde-pointer"
+version = "0.1.0"
+authors = ["Lukas Krejci <lkrejci@redhat.com>"]
+edition = "2018"
+readme = "README.md"
+keywords = ["serde", "json", "json-pointer"]
+license = "Apache-2.0"
+repository = "https://github.com/metlos/serde-pointer"
+description = "A simple JSON Pointer implementation working on top of serde-value"
+
+[dependencies]
+serde-value = "0.6.0"
+nom = "5.0.1"
