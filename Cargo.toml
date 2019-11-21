@@ -1,7 +1,7 @@
 [package]
 name = "serde-pointer"
 version = "0.1.0"
-authors = ["Lukas Krejci <lkrejci@redhat.com>"]
+authors = ["Lukas Krejci <code@krejci.pw>"]
 edition = "2018"
 readme = "README.md"
 keywords = ["serde", "json", "json-pointer"]
