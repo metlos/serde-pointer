@@ -36,6 +36,7 @@ pub enum Step {
 
 pub type ParseError = parser::ParseError;
 pub type ValuePointer<'a> = traverse::ValuePointer<'a>;
+pub type ValuePointerMut<'a> = traverse::ValuePointerMut<'a>;
 
 impl Pointer {
     pub fn push(&mut self, step: Step) -> &mut Self {
@@ -60,10 +61,21 @@ impl Pointer {
         traverse::traverse(val, self)
     }
 
+    pub fn traverse_mut<'a>(&self, val: &'a mut Value) -> Option<ValuePointerMut<'a>> {
+        traverse::traverse_mut(val, self)
+    }
+
     /// A simple override of `traverse()` that directly exposes the found value, if any.
     pub fn find<'a>(&self, val: &'a Value) -> Option<&'a Value> {
         match self.traverse(val) {
             Some(ValuePointer::Existing(v)) => Some(v),
+            _ => None,
+        }
+    }
+
+    pub fn find_mut<'a>(&self, val: &'a mut Value) -> Option<&'a mut Value> {
+        match self.traverse_mut(val) {
+            Some(ValuePointerMut::Existing(v)) => Some(v),
             _ => None,
         }
     }

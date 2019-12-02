@@ -1,19 +1,19 @@
 /*
- *   Copyright (c) 2019 Lukas Krejci
- *   All rights reserved.
+*   Copyright (c) 2019 Lukas Krejci
+*   All rights reserved.
 
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
+*   Licensed under the Apache License, Version 2.0 (the "License");
+*   you may not use this file except in compliance with the License.
+*   You may obtain a copy of the License at
 
- *   http://www.apache.org/licenses/LICENSE-2.0
+*   http://www.apache.org/licenses/LICENSE-2.0
 
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- */
+*   Unless required by applicable law or agreed to in writing, software
+*   distributed under the License is distributed on an "AS IS" BASIS,
+*   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*   See the License for the specific language governing permissions and
+*   limitations under the License.
+*/
 
 use crate::pointer::{Pointer, Step};
 use nom::{
@@ -26,6 +26,7 @@ use nom::{
     sequence::preceded,
     IResult,
 };
+use std::error::Error as StdError;
 use std::fmt;
 use std::fmt::Display;
 use std::str;
@@ -69,13 +70,13 @@ fn _parse_index(s: &str) -> IResult<&str, Step> {
             } else {
                 _parse_name(s)
             }
-        },
+        }
         Err(_) => {
             // not a leading 0
             let (s, ds) = digit1(s)?;
-            let idx = ds
-                .parse::<usize>()
-                .map_err(|_| nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Digit)))?;
+            let idx = ds.parse::<usize>().map_err(|_| {
+                nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Digit))
+            })?;
             Ok((s, Step::Index(idx)))
         }
     }
@@ -94,8 +95,8 @@ fn _parse_new_element(s: &str) -> IResult<&str, Step> {
             } else {
                 _parse_name(s)
             }
-        },
-        Err(e) => Err(e)
+        }
+        Err(e) => Err(e),
     }
 }
 
@@ -108,7 +109,7 @@ fn _escape_seq_or_char(s: &str) -> IResult<&str, char> {
                 // propagate the invalid escape sequence error
                 nom::Err::Error((_, nom::error::ErrorKind::Escaped)) => Err(e),
                 // otherwise this is not an escape sequence
-                _ => none_of("/")(s)
+                _ => none_of("/")(s),
             }
         }
     }
@@ -120,7 +121,10 @@ fn _escape_sequence(s: &str) -> IResult<&str, char> {
     match l {
         '0' => Ok((s, '~')),
         '1' => Ok((s, '/')),
-        _ => Err(nom::Err::Error(nom::error::make_error(s, nom::error::ErrorKind::Escaped)))
+        _ => Err(nom::Err::Error(nom::error::make_error(
+            s,
+            nom::error::ErrorKind::Escaped,
+        ))),
     }
 }
 
@@ -138,6 +142,8 @@ impl Display for ParseError {
         f.write_fmt(format_args!("Invalid JSON Pointer: {}", self.error))
     }
 }
+
+impl StdError for ParseError {}
 
 impl nom::error::ParseError<&str> for ParseError {
     fn from_error_kind(_: &str, kind: nom::error::ErrorKind) -> Self {
