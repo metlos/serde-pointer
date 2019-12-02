@@ -7,3 +7,5 @@
 Builds on top of [serde-value](http://arcnmx.github.io/serde-value/serde_value/) and provides a way of finding values in the intermediate representation provided by `serde-value` using the JSON pointers.
 
 It is not tied to JSON though (apart from the JSON pointer syntax) and works generically over anything that `serde-value` can represent.
+
+Note that this is above all a simple project to learn Rust on, so don't expect any stellar performance or code quality.
